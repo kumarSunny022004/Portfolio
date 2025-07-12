@@ -1,23 +1,97 @@
+import { cn } from "@/lib/utils";
+import { Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
 
-import {cn} from "@/lib/utils";
+const navItems = [
+  { name: "Home", link: "#hero" },
+  { name: "About", link: "#about" },
+  { name: "Skills", link: "#skills" },
+  { name: "Projects", link: "#projects" },
+  { name: "Contact", link: "#contact" },
+];
 
-const navItems =[
-    {name:"Home",link:"#hero"},
-    {name:"About",link:"#about"},
-    {name:"Skills",link:"#skills"},
-    {name:"Projects",link:"#projects"},
-    {name:"Contact",link:"#contact"},
-    
+export const NavBar = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuopen] = useState(false);
 
-]
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
 
-export const NavBar= ()=>{
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
-    const[isScrolled,setIsScrolled]=useState(false);
+  return (
+    <nav>
+      <div
+        className={cn(
+          "fixed w-full z-40 transition-all duration-300",
+          isScrolled
+            ? "py-3 bg-background/95 backdrop-blur-md shadow-xs"
+            : "py-5"
+        )}
+      >
+        <div className="container flex items-center justify-between">
+          <a
+            className="text-xl font-bold text-primary flex items-center"
+            href="#hero"
+          >
+            <span className="relative z-10">
+              <span className="text-glow text-foreground">Sunny</span> Portfolio
+            </span>
+          </a>
 
-    useEffect(() => {},[]);
+          {/* Desktop Nav */}
+          <div className="hidden md:flex space-x-8">
+            {navItems.map((item, key) => (
+              <a
+                key={key}
+                href={item.link}
+                className="text-foreground/80 hover:text-primary transition-colors duration-300"
+              >
+                {item.name}
+              </a>
+            ))}
+          </div>
 
+          {/* Mobile Button */}
+          <button
+            onClick={() => setIsMenuopen((prev) => !prev)}
+            className="md:hidden p-2 text-foreground z-50"
+            aria-label={isMenuOpen ? "Close Menu" : "Open Menu"}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
 
-    
-    return <div className={cn("fixed w-full z-40 transition-all duration-300",)}></div>
-}
+          {/* Mobile Menu */}
+          <div
+            className={cn(
+              "fixed inset-0 bg-background/95 backdrop-blur-md z-30 flex flex-col items-center justify-center",
+              "transition-all duration-300 md:hidden",
+              isMenuOpen
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
+            )}
+          >
+            <div className="flex flex-col space-y-6">
+              {navItems.map((item, key) => (
+                <a
+                  key={key}
+                  href={item.link}
+                  className="text-foreground/80 hover:text-primary transition-colors duration-300 text-lg"
+                  onClick={() => setIsMenuopen(false)}
+                >
+                  {item.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+};
